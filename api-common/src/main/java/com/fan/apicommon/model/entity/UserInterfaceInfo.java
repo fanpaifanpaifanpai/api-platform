@@ -11,61 +11,41 @@ import lombok.Data;
 /**
  * 
  * @author 19677
- * @TableName interface_info
+ * @TableName user_interface_info
  */
-@TableName(value ="interface_info")
+@TableName(value ="user_interface_info")
 @Data
-public class InterfaceInfo implements Serializable {
+public class UserInterfaceInfo implements Serializable {
     /**
-     * 主键
+     * 主键ID
      */
     @TableId(type = IdType.AUTO)
     private Long id;
 
     /**
-     * 接口名称
-     */
-    private String interfaceName;
-
-    /**
-     * 接口描述
-     */
-    private String interfaceDescription;
-
-    /**
-     * 接口地址
-     */
-    private String interfaceUrl;
-
-    /**
-     * 请求头
-     */
-    private String requestHeader;
-
-    /**
-     * 响应头
-     */
-    private String responseHeader;
-
-    /**
-     * 接口状态（正常-0）
-     */
-    private Integer interfaceStatus;
-
-    /**
-     * 请求方法
-     */
-    private String method;
-
-    /**
-     * 创建者id
+     * 用户id
      */
     private Long userId;
 
     /**
-     * 是否删除（未删-0 已删除-1）
+     * 接口id
      */
-    private Integer isDelete;
+    private Long interfaceInfoId;
+
+    /**
+     * 用户调用接口总次数
+     */
+    private Integer totalNum;
+
+    /**
+     * 用户调用接口剩余次数
+     */
+    private Integer leftNum;
+
+    /**
+     * 状态（0-正常，1-禁用）
+     */
+    private Integer status;
 
     /**
      * 创建时间
@@ -76,6 +56,11 @@ public class InterfaceInfo implements Serializable {
      * 更新时间
      */
     private Date updateTime;
+
+    /**
+     * 是否删除（0-正常，1-删除）
+     */
+    private Integer deleteId;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

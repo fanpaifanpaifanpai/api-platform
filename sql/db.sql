@@ -31,3 +31,16 @@ CREATE TABLE `user` (
                         PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT
 CHARSET=utf8
+
+CREATE TABLE `user_interface_info` (
+                                       `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+                                       `user_id` bigint(20) NOT NULL COMMENT '用户id',
+                                       `interface_info_id` bigint(20) NOT NULL COMMENT '接口id',
+                                       `total_num` int(11) NOT NULL COMMENT '用户调用接口总次数',
+                                       `left_num` int(11) NOT NULL COMMENT '用户调用接口剩余次数',
+                                       `status` int(11) NOT NULL DEFAULT '0' COMMENT '状态（0-正常，1-禁用）',
+                                       `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                                       `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                       `delete_id` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否删除（0-正常，1-删除）',
+                                       PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8

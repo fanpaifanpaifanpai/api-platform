@@ -4,18 +4,23 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fan.apibackend.annotation.AuthCheck;
 import com.fan.apibackend.model.dto.interfaceInfo.InterfaceInfoAddRequest;
+import com.fan.apibackend.model.dto.interfaceInfo.InterfaceInfoInvokeRequest;
 import com.fan.apibackend.model.dto.interfaceInfo.InterfaceInfoQueryRequest;
 import com.fan.apibackend.model.dto.interfaceInfo.InterfaceInfoUpdateRequest;
+import com.fan.apibackend.model.enums.InterfaceInfoStatusEnum;
 import com.fan.apibackend.service.InterfaceInfoService;
 import com.fan.apibackend.service.UserService;
+import com.fan.apiclientsdk.client.ApiClient;
 import com.fan.apicommon.api.CommonResult;
 import com.fan.apicommon.api.DeleteRequest;
+import com.fan.apicommon.api.IdRequest;
 import com.fan.apicommon.api.ResultCode;
 import com.fan.apicommon.api.ResultUtils;
 import com.fan.apicommon.constants.PageConstant;
 import com.fan.apicommon.exception.ApiException;
 import com.fan.apicommon.model.entity.InterfaceInfo;
 import com.fan.apicommon.model.entity.User;
+import com.google.gson.Gson;
 import java.util.List;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -41,6 +46,9 @@ public class InterfaceInfoController {
 
     @Resource
     private UserService userService;
+    @Resource
+    private ApiClient apiClient;
+
     // region 增删改查
 
     /**
@@ -181,6 +189,84 @@ public class InterfaceInfoController {
         queryWrapper.orderBy(StringUtils.isNotBlank(sortField),sortOrder.equals(PageConstant.SORT_ORDER_ASC),sortField);
         Page<InterfaceInfo> result =
             interfaceInfoService.page(new Page<>(currentPage, pageSize), queryWrapper);
+        return ResultUtils.success(result);
+    }
+    //endregion
+
+    //region 发布、下线、调用测试
+
+    /**
+     * 发布接口
+     * @param idRequest 接口id请求
+     * @return 发布接口布尔接口
+     */
+    @AuthCheck(mustRole = "admin")
+    @PostMapping("/online")
+    public CommonResult<Boolean> onlineInterfaceInfo(@RequestBody IdRequest idRequest){
+        if (idRequest == null){
+            throw new ApiException(ResultCode.FAILED);
+        }
+        Long id = idRequest.getId();
+        InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(id);
+        if (oldInterfaceInfo == null){
+            throw new ApiException(ResultCode.FAILED);
+        }
+        User testUser = new User();
+        testUser.setUserName("测试");
+        String userName = apiClient.getUserByPost(testUser);
+        if (StringUtils.isBlank(userName)){
+            throw new ApiException(ResultCode.FAILED);
+        }
+        InterfaceInfo interfaceInfo = new InterfaceInfo();
+        interfaceInfo.setId(id);
+        interfaceInfo.setInterfaceStatus(InterfaceInfoStatusEnum.ONLINE.getValue());
+        boolean result = interfaceInfoService.updateById(interfaceInfo);
+        return ResultUtils.success(result);
+    }
+
+    /**
+     * 下线接口
+     * @param idRequest 接口id请求
+     * @return 下线接口布尔结果
+     */
+    @AuthCheck(mustRole = "admin")
+    @PostMapping("/offline")
+    public CommonResult<Boolean> offlineInterfaceInfo(@RequestBody IdRequest idRequest){
+        if (idRequest == null){
+            throw new ApiException(ResultCode.FAILED);
+        }
+        Long id = idRequest.getId();
+        InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(id);
+        if (oldInterfaceInfo == null){
+            throw new ApiException(ResultCode.FAILED);
+        }
+        InterfaceInfo interfaceInfo = new InterfaceInfo();
+        interfaceInfo.setId(id);
+        interfaceInfo.setInterfaceStatus(InterfaceInfoStatusEnum.OFFLINE.getValue());
+        boolean result = interfaceInfoService.updateById(interfaceInfo);
+        return ResultUtils.success(result);
+    }
+
+    @PostMapping("/invoke")
+    public CommonResult<Object> invokeInterfaceInfo(@RequestBody InterfaceInfoInvokeRequest interfaceInfoInvokeRequest,
+                                                    HttpServletRequest request){
+        if (interfaceInfoInvokeRequest == null || interfaceInfoInvokeRequest.getId() <= 0){
+            throw new ApiException(ResultCode.FAILED);
+        }
+        Long id = interfaceInfoInvokeRequest.getId();
+        InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(id);
+        if (oldInterfaceInfo == null || oldInterfaceInfo.getInterfaceStatus() == InterfaceInfoStatusEnum.OFFLINE
+            .getValue()){
+            throw new ApiException(ResultCode.FAILED);
+        }
+        User loginUser = userService.getLoginUser(request);
+        String accessKey = loginUser.getAccessKey();
+        String secretKey = loginUser.getSecretKey();
+        ApiClient tempClient = new ApiClient(accessKey, secretKey);
+        String userRequestParams = interfaceInfoInvokeRequest.getUserRequestParams();
+        Gson gson = new Gson();
+        User user = gson.fromJson(userRequestParams, User.class);
+        String result = tempClient.getUserByPost(user);
         return ResultUtils.success(result);
     }
     //endregion

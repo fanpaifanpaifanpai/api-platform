@@ -17,6 +17,9 @@
     <modules>
         <module>api-backend</module>
         <module>api-common</module>
+        <module>api-interface</module>
+        <module>api-gateway</module>
+        <module>api-client-sdk</module>
     </modules>
 
     <properties>
@@ -24,13 +27,21 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
         <api-common.version>1.0-SNAPSHOT</api-common.version>
+        <api-client-sdk.version>1.0-SNAPSHOT</api-client-sdk.version>
         <mybatis-spring-boot-starter.version>2.2.2</mybatis-spring-boot-starter.version>
         <mybatis-plus-boot-starter.version>3.5.1</mybatis-plus-boot-starter.version>
         <mysql-connector-java.version>8.0.31</mysql-connector-java.version>
-        <spring-boot-starter-web.version>2.7.5</spring-boot-starter-web.version>
+        <spring-boot-starter-web.version>2.7.0</spring-boot-starter-web.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
-        <hutool-all.version>5.8.9</hutool-all.version>
         <knife4j-spring-boot-starter.version>3.0.3</knife4j-spring-boot-starter.version>
+        <spring-cloud-starter-gateway.version>3.1.4</spring-cloud-starter-gateway.version>
+        <hutool-all.version>5.8.9</hutool-all.version>
+        <spring-boot-configuration-processor.version>2.7.5</spring-boot-configuration-processor.version>
+        <gson.version>2.9.0</gson.version>
+        <spring-boot-autoconfigure.version>2.7.5</spring-boot-autoconfigure.version>
+        <spring-cloud.version>2021.0.5</spring-cloud.version>
+        <dubbo.version>3.0.9</dubbo.version>
+        <nacos-client.version>2.1.0</nacos-client.version>
     </properties>
 
     <dependencies>
@@ -55,25 +66,17 @@
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>cn.hutool</groupId>
-                <artifactId>hutool-all</artifactId>
-                <version>${hutool-all.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.xiaoymin</groupId>
-                <artifactId>knife4j-spring-boot-starter</artifactId>
-                <version>${knife4j-spring-boot-starter.version}</version>
-            </dependency>
+
+
             <dependency>
                 <groupId>com.fan</groupId>
                 <artifactId>api-common</artifactId>
                 <version>${api-common.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-web</artifactId>
-                <version>${spring-boot-starter-web.version}</version>
+                <groupId>com.fan</groupId>
+                <artifactId>api-client-sdk</artifactId>
+                <version>${api-client-sdk.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.mybatis.spring.boot</groupId>
@@ -86,19 +89,70 @@
                 <version>${mybatis-plus-boot-starter.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-lang3</artifactId>
-                <version>${commons-lang3.version}</version>
-            </dependency>
-
-            <dependency>
                 <groupId>mysql</groupId>
                 <artifactId>mysql-connector-java</artifactId>
                 <version>${mysql-connector-java.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-web</artifactId>
+                <version>${spring-boot-starter-web.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-spring-boot-starter</artifactId>
+                <version>${knife4j-spring-boot-starter.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-gateway</artifactId>
+                <version>${spring-cloud-starter-gateway.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool-all.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-configuration-processor</artifactId>
+                <version>${spring-boot-configuration-processor.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${gson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-autoconfigure</artifactId>
+                <version>${spring-boot-autoconfigure.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.dubbo</groupId>
+                <artifactId>dubbo</artifactId>
+                <version>${dubbo.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba.nacos</groupId>
+                <artifactId>nacos-client</artifactId>
+                <version>${nacos-client.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
+
 
     <build>
         <plugins>
@@ -114,15 +168,8 @@
                     </excludes>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>16</source>
-                    <target>16</target>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
+
 
 </project>
